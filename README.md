@@ -1,4 +1,4 @@
-# Installation and running
+# Installation and running the code locally
 
 2. clone the repo
 

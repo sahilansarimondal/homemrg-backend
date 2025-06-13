@@ -2,17 +2,42 @@ import User from "../models/User.model.js";
 
 export const createUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    console.log("Received request to create user:", req.body);
 
-    // Basic validation
-    if (!username || !email || !password) {
-      return res.status(400).json({ error: "All fields are required" });
+    const {
+      firstName,
+      lastName,
+      street,
+      city,
+      state,
+      zip,
+      email,
+      password,
+      confirmPassword,
+    } = req.body;
+
+    // const userExists = await User.findOne({ email });
+    // if (userExists) {
+    //   return res
+    //     .status(400)
+    //     .json({ error: "Username or email already exists" });
+    // }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ error: "Passwords do not match" });
     }
 
     const newUser = new User({
-      username,
-      email,
-      password, // In production, you should hash the password
+      full_name: `${firstName} ${lastName}`.trim(),
+      email: email,
+      password: password, // In production, you should hash the password
+      role: "home_manager", // Default role
+      address: {
+        street,
+        city,
+        state,
+        zip,
+      },
     });
 
     const savedUser = await newUser.save();

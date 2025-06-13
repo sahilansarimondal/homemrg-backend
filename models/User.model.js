@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    username: {
+    full_name: {
       type: String,
       required: true,
       trim: true,
@@ -19,6 +19,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       minlength: 4,
+    },
+    role: String,
+    address: {
+      street: String,
+      city: String,
+      state: String,
+      zip: String,
     },
   },
   {

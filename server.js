@@ -2,6 +2,7 @@ import express from "express";
 import router from "./routes/index.js";
 import { config } from "./config.js";
 import connectDB from "./config/db.js";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import "dotenv/config";
 
@@ -21,6 +22,7 @@ connectDB();
 
 // Middleware
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 
 // roures

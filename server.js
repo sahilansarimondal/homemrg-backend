@@ -1,0 +1,33 @@
+import express from "express";
+import router from "./routes/index.js";
+import { config } from "./config.js";
+import connectDB from "./config/db.js";
+import "dotenv/config";
+
+const app = express();
+const PORT = process.env.PORT || config.port;
+
+// connect to the database
+connectDB();
+
+// Middleware
+app.use(express.json());
+
+// roures
+app.use("/api", router);
+
+// Routes
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to the Express backend!" });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Something went wrong!" });
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});

@@ -2,6 +2,8 @@ import { Auth } from "@auth/core";
 import { authConfig } from "../config/auth.js";
 import User from "../models/User.model.js";
 import jwt from "jsonwebtoken";
+import { v4 as uuidv4 } from "uuid";
+import { sendVerificationEmail } from "../config/resend.js";
 
 export const login = async (req, res) => {
   try {
@@ -12,6 +14,13 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    if (!user.isVerified) {
+      return res.status(401).json({
+        error:
+          "Email not verified. Please check your email for verification link.",
+      });
     }
 
     // Check password

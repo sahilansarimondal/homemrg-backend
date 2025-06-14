@@ -26,6 +26,16 @@ const userSchema = new mongoose.Schema(
       enum: ["manager", "contractor", "homeowner"],
       default: "homeowner",
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+    },
+    verificationTokenExpires: {
+      type: Date,
+    },
     address: {
       street: String,
       city: String,
@@ -49,6 +59,14 @@ userSchema.pre("save", async function (next) {
 // Method to compare passwords
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
+};
+
+// Method to generate verification token
+userSchema.methods.generateVerificationToken = function () {
+  const token = crypto.randomBytes(20).toString("hex");
+  this.verificationToken = token;
+  this.verificationTokenExpires = Date.now() + 300000; // 5 minutes
+  return token;
 };
 
 const User = mongoose.model("User", userSchema);

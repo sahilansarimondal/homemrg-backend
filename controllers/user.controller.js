@@ -1,9 +1,9 @@
 import User from "../models/User.model.js";
+import { v4 as uuidv4 } from "uuid";
+import { sendVerificationEmail } from "../config/resend.js";
 
 export const createUser = async (req, res) => {
   try {
-    console.log("Received request to create user:", req.body);
-
     const {
       firstName,
       lastName,
@@ -25,6 +25,7 @@ export const createUser = async (req, res) => {
       email: email,
       password: password, // In production, you should hash the password
       role: "homeowner", // Default role
+      verificationToken: uuidv4(),
       address: {
         street,
         city,
@@ -35,11 +36,13 @@ export const createUser = async (req, res) => {
 
     const savedUser = await newUser.save();
 
-    // Omit password in response
-    const userResponse = savedUser.toObject();
-    delete userResponse.password;
+    // Send verification email
+    await sendVerificationEmail(email, newUser.verificationToken);
 
-    res.status(201).json(userResponse);
+    res.status(201).json({
+      message:
+        "Signup successful! Please check your email to verify your account.",
+    });
   } catch (error) {
     if (error.code === 11000) {
       // Duplicate key error
@@ -57,5 +60,31 @@ export const getUsers = async (req, res) => {
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: "Server error" });
+  }
+};
+
+// Email verification function
+export const verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const user = await User.findOne({
+      verificationToken: token,
+      isVerified: false,
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ error: "Invalid or expired verification token" });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "Email verified successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

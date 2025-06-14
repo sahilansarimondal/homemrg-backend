@@ -21,7 +21,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 4,
     },
-    role: String,
+    role: {
+      type: String,
+      enum: ["manager", "contractor", "homeowner"],
+      default: "homeowner",
+    },
     address: {
       street: String,
       city: String,

@@ -16,13 +16,6 @@ export const createUser = async (req, res) => {
       confirmPassword,
     } = req.body;
 
-    // const userExists = await User.findOne({ email });
-    // if (userExists) {
-    //   return res
-    //     .status(400)
-    //     .json({ error: "Username or email already exists" });
-    // }
-
     if (password !== confirmPassword) {
       return res.status(400).json({ error: "Passwords do not match" });
     }
@@ -31,7 +24,7 @@ export const createUser = async (req, res) => {
       full_name: `${firstName} ${lastName}`.trim(),
       email: email,
       password: password, // In production, you should hash the password
-      role: "home_manager", // Default role
+      role: "homeowner", // Default role
       address: {
         street,
         city,

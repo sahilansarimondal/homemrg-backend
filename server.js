@@ -21,7 +21,7 @@ connectDB();
 // };
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3004", credentials: true }));
 app.use(cookieParser());
 app.use(express.json());
 

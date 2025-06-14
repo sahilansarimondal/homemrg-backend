@@ -32,7 +32,7 @@ export const login = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     // Return user data (without password)
@@ -59,7 +59,8 @@ export const getCurrentUser = async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.AUTH_SECRET);
-    const user = await User.findById(decoded.id);
+
+    const user = await User.findById(decoded.id, "-password"); // Exclude password field
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });

@@ -21,7 +21,8 @@ export const createUser = async (req, res) => {
     }
 
     const newUser = new User({
-      full_name: `${firstName} ${lastName}`.trim(),
+      first_name: firstName.trim(),
+      last_name: lastName.trim(),
       email: email,
       password: password, // In production, you should hash the password
       role: "homeowner", // Default role

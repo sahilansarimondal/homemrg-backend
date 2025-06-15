@@ -80,3 +80,31 @@ export const getCurrentUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const resendVerificationEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email, isVerified: false });
+
+    if (!user) {
+      return res.status(400).json({
+        error: "Email already verified or not found",
+      });
+    }
+
+    // Generate new token if expired
+    if (!user.verificationToken || user.verificationTokenExpires < Date.now()) {
+      user.verificationToken = uuidv4();
+      await user.save();
+    }
+
+    await sendVerificationEmail(email, user.verificationToken);
+
+    res.status(200).json({
+      message: "Verification email resent successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

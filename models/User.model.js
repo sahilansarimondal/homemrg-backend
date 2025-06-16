@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 const userSchema = new mongoose.Schema(
   {
@@ -42,6 +43,12 @@ const userSchema = new mongoose.Schema(
     verificationTokenExpires: {
       type: Date,
     },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordExpires: {
+      type: Date,
+    },
     address: {
       street: String,
       city: String,
@@ -72,6 +79,14 @@ userSchema.methods.generateVerificationToken = function () {
   const token = crypto.randomBytes(20).toString("hex");
   this.verificationToken = token;
   this.verificationTokenExpires = Date.now() + 300000; // 5 minutes
+  return token;
+};
+
+// Add this method to generate reset token
+userSchema.methods.generatePasswordResetToken = function () {
+  const token = crypto.randomBytes(20).toString("hex");
+  this.resetPasswordToken = token;
+  this.resetPasswordExpires = Date.now() + 300000; // 5 minutes
   return token;
 };
 
